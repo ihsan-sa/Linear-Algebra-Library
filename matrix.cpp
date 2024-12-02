@@ -114,7 +114,7 @@ Matrix &Matrix::operator=(Matrix &&org){
 //destructor
 Matrix::~Matrix(){
     // if(DEBUG_STATUS) std::cout<<"----------------------------------------------------------\n";
-    if(DEBUG_STATUS) std::cout<<"\nCalling ~Matrix() on "<<*this;
+    if(DEBUG_STATUS) std::cout<<"\nCalling ~Matrix() on "<<*this<<this<<"\n";
     clear();
     if(DEBUG_STATUS) std::cout<<"Back in ~Matrix()\n\n";
 }
@@ -260,7 +260,7 @@ Matrix &Matrix::operator|=(Matrix const &rhs){
     if(DEBUG_STATUS) std::cout<<"\t*this.matrix_: "<<matrix_<<" tmp.matrix_: "<<tmp.matrix_<<"\n";
     cols_ = tmp.cols() + rhs.cols();
     rows_ = tmp.rows();
-    matrix_ = new float*[cols()];
+    matrix_ = new float*[rows()]; //checks
     if(DEBUG_STATUS) std::cout<<"\tReassigned matrix_: "<<matrix_<<"\n";
 
 
