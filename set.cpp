@@ -259,12 +259,54 @@ int *Set::dependencies_pos() const{
 
 }
 
+int *Set::dependencies_pos(Matrix const &m){
+    int nbr_dep = m.nullity();
+    int* deps = new int[nbr_dep];
+    //init array full of zeros
+    for(int dep{0}; dep < nbr_dep; dep++){
+        deps[dep] = 0;
+    }
+    int dep_index{0};
+
+    // std::cout<<"In remove_dependencies()\n";
+    Set li_set{};
+    Matrix ld_matrix{m};
+    Matrix li_matrix{m.rref()};
+    // std::cout<<"\tli_matrix: ";
+    // std::cout<<li_matrix;
+
+    int row_offset{0};
+
+    for(int col{0}; col < li_matrix.cols(); col++){
+        // std::cout<<"\tLooking through matrix... row: "<<col+row_offset<<" col: "<<col<<" col - offset: "<<col - row_offset<<" le: "<<li_matrix.matrix(col + row_offset, col)<<"\n"; 
+
+        if(col + row_offset == li_matrix.rows() - 1){
+            // std::cout<<"Removing remaining entries\n";
+            for(int remaining_col{col + 1}; remaining_col < li_matrix.cols(); remaining_col++){
+                deps[dep_index] = remaining_col;
+                dep_index++;
+            }
+            break;
+        }
+
+        if(li_matrix.matrix(col + row_offset, col) != 1){
+            // std::cout<<"\tAbout to remove...\n";
+            deps[dep_index] = col;
+            dep_index++;
+            // std::cout<<"\tRemoving: "<<ld_matrix[col];
+            row_offset--;
+        }
+    }
+
+    return deps;
+}
+
 Set Set::col_space(Matrix const &m){
     Set col_sp{m};
     // std::cout<<col_sp<<m.rref();
     return col_sp.remove_dependencies();
 }
-Set Set::null_space(Matrix const &m){
+Set Set::null_space(Matrix const &m, bool remove_ld){
     Set tmp{m};
     Set null_sp{};
     // std::cout<<"In null_space()\n\n";
@@ -273,13 +315,24 @@ Set Set::null_space(Matrix const &m){
     // std::cout<<"\n\tDone rref: \n";
     // std::cout<<m_rref;
 
-    // std::cout<<"\tReceiving dependencies...  nbr: ";
-    int dependencies = tmp.dependencies(); 
-    int* dependency_locations = tmp.dependencies_pos();
-    // std::cout<<dependencies<<"\n";
+    // std::cout<<"\tReceiving dependencies...\n";
+    //FIGURE THIS OUT. USE MATRIX BC THERE MIGHT BE SCALAR MULTS OF COLS THAT WILL BE ELIMINATED IN THE CONVERSION TO A SET.
+    int dependencies{0};
+    int* dependency_locations{nullptr};
+    if(remove_ld){
+        dependencies = tmp.dependencies();
+        dependency_locations = tmp.dependencies_pos();
+        // std::cout<<"\t\tRemoved dependencies.\n";
+    }else{
+        dependencies = m.nullity();
+        dependency_locations = Set::dependencies_pos(m);
+        // std::cout<<"\t\tDidn't remove dependencies.\n";
+    }
+    
+    // std::cout<<"\t\tNbr of dependencies: "<<dependencies<<"\n";
 
     // for(int dep{0}; dep < dependencies; dep++){
-        // std::cout<<"\t\t"<<dependency_locations[dep]<<"\n";
+    //     std::cout<<"\t\t"<<dependency_locations[dep]<<"\n";
     // }
 
     // std::cout<<"\tDependencies received.\n";
@@ -298,10 +351,10 @@ Set Set::null_space(Matrix const &m){
 
         for(int row{0}, col{0}; col < m_rref.cols(); col++){
 
-            // std::cout<<"\t\t\tOn col: "<<col<<" row: "<<row<<"\n";
-            while(col != m_rref.get_le_col(row) && row != m_rref.rows() - 1){
+            // std::cout<<"\t\t\tOn col: "<<col<<" row: "<<row<<" leading entry is in col: "<<m_rref.get_le_col(row)<<"\n";
+            while(col != m_rref.get_le_col(row) && row != m_rref.rows() - 1 && m_rref.get_le_col(row) != -1){
                 
-                // std::cout<<"\t\t\t\tAssigning val... in while\n";
+                // std::cout<<"\t\t\t\tAssigning val... in while... col: "<<col<<"\n";
 
                 if(col == dep_loc){ 
                     // std::cout<<"\t\t\t\tIn dep col: "<<col<<"\n";
@@ -351,6 +404,9 @@ Set Set::null_space(Matrix const &m){
 
     return null_sp;
 }
+
+
+
 
 int Set::dim() const{
     Set tmp{remove_dependencies()};

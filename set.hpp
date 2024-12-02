@@ -46,12 +46,13 @@ public:
     bool in_span(Matrix const &m) const;
     int dependencies() const; //returns the number of dependencies
     int *dependencies_pos() const; //returns a DYNAMICALLY ALLOCATED ARRAY with the positions of the dependencies
+    static int *dependencies_pos(Matrix const &m);
     Set remove_dependencies() const; //removes all dependencies from the set and returns a new set
     int dim() const; //removes dependencies from a set S and then determines the dimension of SpanS
 
     //fundamental subspaces associated with a matrix
     static Set col_space(Matrix const &m); //returns a basis for the column space of a matrix m
-    static Set null_space(Matrix const &m); //returns a basis for the null space of a matrix m
+    static Set null_space(Matrix const &m, bool remove_ld = true); //returns a basis for the null space of a matrix m
 
     friend std::ostream &operator<<(std::ostream &out, Set const &s);
 };

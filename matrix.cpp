@@ -1,6 +1,8 @@
 #include "matrix.hpp"
 #include <stdexcept>
 
+#define DEBUG_STATUS false
+
 //constructor and destructors
 
 //question: Can you call an api func in a constructor
@@ -111,8 +113,10 @@ Matrix &Matrix::operator=(Matrix &&org){
 }
 //destructor
 Matrix::~Matrix(){
-    // std::cout<<"Calling ~Matrix() on "<<*this;
+    // if(DEBUG_STATUS) std::cout<<"----------------------------------------------------------\n";
+    if(DEBUG_STATUS) std::cout<<"\nCalling ~Matrix() on "<<*this;
     clear();
+    if(DEBUG_STATUS) std::cout<<"Back in ~Matrix()\n\n";
 }
 
 //API
@@ -236,9 +240,10 @@ Matrix &Matrix::operator/=(Matrix const &rhs){
     return *this;
 }
 Matrix &Matrix::operator|=(Matrix const &rhs){
-    // std::cout<<"\nIN |=\n";
-    // std::cout<<*this<<rhs<<"*this dim: "<<rows()<<"x"<<cols()<<" rhs: "<<rhs.rows()<<"x"<<rhs.cols()<<"\n";
-    // std::cout<<"++++++++++++++++++++++++++++++++++\n";
+    if(DEBUG_STATUS) std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    if(DEBUG_STATUS) std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    if(DEBUG_STATUS) std::cout<<"\nIn |=\n";
+    if(DEBUG_STATUS) std::cout<<*this<<rhs<<"\t*this dim: "<<rows()<<"x"<<cols()<<" rhs: "<<rhs.rows()<<"x"<<rhs.cols()<<"\n";
     if(rows() != rhs.rows()){
         throw std::domain_error{
             "Number of rows does not agree for augment."
@@ -246,17 +251,17 @@ Matrix &Matrix::operator|=(Matrix const &rhs){
     }
     //create temp matrix
     Matrix tmp{*this};
-    // std::cout<<"*this.matrix_: "<<matrix_<<" tmp.matrix_: "<<tmp.matrix_<<"\n";
+    if(DEBUG_STATUS) std::cout<<"\t*this.matrix_: "<<matrix_<<" tmp.matrix_: "<<tmp.matrix_<<"\n";
     //clear current matrix
-    // std::cout<<"About to clear *this\n";
+    if(DEBUG_STATUS) std::cout<<"\tAbout to clear *this\n";
     clear();
-    // std::cout<<"Cleared *this\n";
+    if(DEBUG_STATUS) std::cout<<"\tCleared *this\n";
     //reassign matrix
-    // std::cout<<"*this.matrix_: "<<matrix_<<" tmp.matrix_: "<<tmp.matrix_<<"\n";
+    if(DEBUG_STATUS) std::cout<<"\t*this.matrix_: "<<matrix_<<" tmp.matrix_: "<<tmp.matrix_<<"\n";
     cols_ = tmp.cols() + rhs.cols();
     rows_ = tmp.rows();
     matrix_ = new float*[cols()];
-    // std::cout<<"Reassigned matrix_: "<<matrix_<<"\n";
+    if(DEBUG_STATUS) std::cout<<"\tReassigned matrix_: "<<matrix_<<"\n";
 
 
     //now reassign temp
@@ -266,16 +271,20 @@ Matrix &Matrix::operator|=(Matrix const &rhs){
             matrix_[row][col] = tmp.matrix(row, col);
         }
     }
-    // std::cout<<*this;
+    if(DEBUG_STATUS) std::cout<<*this;
     //now perform augment
     for(int row{0}; row < rows(); row++){
         for(int col{0}; col < rhs.cols(); col++){
             matrix_[row][tmp.cols() + col] = rhs.matrix(row, col);
         }
     }
-    // std::cout<<*this;
-    // std::cout<<"DONE |=\n";
-    // std::cout<<"*this.matrix_: "<<matrix_<<" tmp.matrix_: "<<tmp.matrix_<<" *matrix_: "<<*tmp.matrix_<<"\n";
+    if(DEBUG_STATUS) std::cout<<*this;
+    if(DEBUG_STATUS) std::cout<<"\t*this.matrix_: "<<matrix_<<" tmp.matrix_: "<<tmp.matrix_<<" *matrix_: "<<*tmp.matrix_<<"\n";
+    if(DEBUG_STATUS) std::cout<<"DONE |=\n";
+    if(DEBUG_STATUS) std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    if(DEBUG_STATUS) std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+
+
     return *this;
 }
 float Matrix::operator%(Matrix const &rhs) const{
@@ -363,7 +372,6 @@ bool Matrix::is_mult_allowed(Matrix const &m) const {
 bool Matrix::is_same_dim(Matrix const &m) const {
     return ((rows() == m.rows()) && (cols() == m.cols())) ? true : false;
 }
-
 bool Matrix::is_vector(Matrix const &m){
     return m.is_vector();
 }
@@ -379,23 +387,31 @@ bool Matrix::is_same_dim(Matrix const &m1, Matrix const &m2){
 
 //operations
 void Matrix::clear(){
-    // std::cout<<"In clear\n";
+    if(DEBUG_STATUS) std::cout<<"============================================================================================\n";
+    if(DEBUG_STATUS) std::cout<<"=  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  = \n";
+
+    if(DEBUG_STATUS) std::cout<<"In clear\n";
     if(matrix_ == nullptr){
-        // std::cout<<"Matrix already cleared.";
+        if(DEBUG_STATUS) std::cout<<"\tMatrix already cleared.";
         return;
     }
+    if(DEBUG_STATUS) std::cout<<"\tGoing to delete rows\n\n";
     for(int row{0}; row < rows(); row++){
         for(int col{0}; col < cols(); col++){
             matrix_[row][col] = 0;
         }
-        // std::cout<<"about to delete row: "<<row<<" "<<matrix_[row]<<"\n";
+        if(DEBUG_STATUS) std::cout<<"\t\tabout to delete row: "<<row<<" "<<matrix_[row]<<"\n";
         delete[] matrix_[row];
-        // std::cout<<"deleted row: "<<row<<"\n";
+        if(DEBUG_STATUS) std::cout<<"\t\tdeleted row: "<<row<<"\n";
         matrix_[row] = nullptr;
     }
-    // std::cout<<"about to delete matrix: "<<matrix_<<" "<<*matrix_<<"\n";
+    if(DEBUG_STATUS) std::cout<<"\n\tabout to delete matrix: "<<matrix_<<" "<<*matrix_<<"\n";
     delete[] matrix_;
-    // std::cout<<"deleted matrix\n";
+    if(DEBUG_STATUS) std::cout<<"\tdeleted matrix\n";
+    if(DEBUG_STATUS) std::cout<<"Done clear\n";
+    if(DEBUG_STATUS) std::cout<<"=  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  = \n";  
+    if(DEBUG_STATUS) std::cout<<"============================================================================================\n";
+
 
     matrix_ = nullptr;
     rows_ = 0;
@@ -438,8 +454,6 @@ Matrix Matrix::eye(int rows, int cols){
     }
     return tmp;
 }
-
-
 Matrix Matrix::ref() const{
 
     float constexpr TOLERANCE = 10e-3;
@@ -502,7 +516,6 @@ Matrix Matrix::ref() const{
 
     
 }
-
 Matrix Matrix::rref() const{
     Matrix rref = ref();
     // std::cout<<"In rref()\n";
@@ -597,7 +610,6 @@ Matrix Matrix::rref() const{
     return rref;
 
 }
-
 Matrix &Matrix::swap_rows(int r1, int r2){
     if((r1 > rows() || r2 > rows()) || (r1 < 0 || r2 < 0)){
         throw std::domain_error{
@@ -662,7 +674,6 @@ Matrix Matrix::e(int n, int i){
     tmp.matrix_[i - 1][0] = 1;
     return tmp;
 }
-
 float Matrix::get_le_val(int row) const {
     if(row >= rows()){
         throw std::domain_error{
@@ -691,7 +702,6 @@ float Matrix::get_le_val(int row) const {
 
     return leading_entry;
 }
-
 int Matrix::get_le_col(int row) const{
     if(row >= rows()){
         throw std::domain_error{
@@ -716,10 +726,6 @@ int Matrix::get_le_col(int row) const{
 
     return col;
 }
-
-
-
-
 
 
 

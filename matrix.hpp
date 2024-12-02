@@ -99,6 +99,7 @@ public:
     Matrix &swap_rows(int r1, int r2); //swaps the rows and returns the matrix by reference
     float get_le_val(int row) const; //returns the leading entry at row row. Returns 0 if leading entry is not found
     int get_le_col(int row) const; //returns the column of the leading entry
+    int *dependencies_pos() const;
 
     //static functions
 
