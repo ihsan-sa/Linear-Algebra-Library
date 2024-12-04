@@ -658,6 +658,11 @@ Matrix Matrix::inv() const{
             "Non square matrix cannot be inverted."
         };
     }
+    if(det() != 0){
+        throw std::domain_error{
+            "Nonzero determinant. Not invertible."
+        };
+    }
     return Matrix{(*this)/(Matrix::eye(cols()))};
 }
 Matrix Matrix::transpose() const{
@@ -748,8 +753,79 @@ Matrix Matrix::remove_zero_rows() const{
     }
     return tmp;
 }
+float Matrix::det() const{
+    if(!is_square()){
+        throw std::domain_error{
+            "Cannot compute determinant of non-square matrix."
+        };
+    }
+    if(rows() == 1){
+        return matrix(0,0);
+    }
+    if(rows() == 2){
+        return (matrix(0,0) * matrix(1,1)) - (matrix(1,0) * matrix(0,1));
+    }
 
+    //otherwise, we need to do co-factor expansion
 
+    bool neg_sign{false};
+    float det{0};
+    //we will walk across the first row
+
+    for(int col{0}; col < cols(); col++){
+
+        float co_factor = matrix(0, col) * ((neg_sign) ? -1 : 1); //if the sign is negative, switch it
+
+        Matrix tmp{*this};
+        tmp = tmp.remove_col(col);
+        tmp = tmp.remove_row(0);
+
+        det += co_factor * tmp.det();
+
+        //flip the sign
+        neg_sign = (neg_sign) ? false : true;
+    }
+
+    return det;
+    
+}
+Matrix Matrix::remove_col(int col_remove) const{
+
+    if(col_remove >= cols()){
+        throw std::domain_error{
+            "Cannot remove col since out of range."
+        };
+    }
+
+    Matrix tmp{rows(), cols() - 1};
+    for(int row{0}; row < rows(); row++){
+        for(int col{0},  tmp_col{0}; col < cols(); col++){
+            if(col == col_remove) continue;
+            tmp.matrix_[row][tmp_col] = matrix(row, col);
+            tmp_col ++;
+        }
+    }
+    return tmp;
+}
+Matrix Matrix::remove_row(int row_remove) const{
+    if(row_remove >= rows()){
+        throw std::domain_error{
+            "Cannot remove row since out of range."
+        };
+    }
+   
+    Matrix tmp{rows() - 1, cols()};
+    for(int row{0}, tmp_row{0}; row < rows(); row++){
+
+        if(row == row_remove) continue;
+
+        for(int col{0}; col < cols(); col++){
+            tmp.matrix_[tmp_row][col] = matrix(row, col);
+        }
+        tmp_row++;
+    }
+    return tmp;
+}
 
 
 

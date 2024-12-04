@@ -101,6 +101,8 @@ public:
     float get_le_val(int row) const; //returns the leading entry at row row. Returns 0 if leading entry is not found
     int get_le_col(int row) const; //returns the column of the leading entry
     Matrix remove_zero_rows() const; //returns a new matrix which is a copy of *this with no zero rows
+    Matrix remove_col(int col) const; //returns a new matrix which is a copy of *this with col col removed.
+    Matrix remove_row(int row) const; //returns a new matrix which is a copy of *this with row row removed.
 
     //static functions
 
