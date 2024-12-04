@@ -75,6 +75,7 @@ public:
     bool operator!=(Matrix const &m) const; //returns true if both matrices not are equal -- DONE
     bool is_mult_allowed(Matrix const &m) const; //returns true if *this * m is allowed -- DONE
     bool is_same_dim(Matrix const &m) const; //returns true if the dimensions of *this and m are the same -- DONE
+    bool is_row_zero(int row) const; //returns true if the row is all zeros
 
     //static functions for the same operations
     static bool is_vector(Matrix const &m); //returns true if *this is a vector. Does not modify *this. -- DONE
@@ -99,7 +100,7 @@ public:
     Matrix &swap_rows(int r1, int r2); //swaps the rows and returns the matrix by reference
     float get_le_val(int row) const; //returns the leading entry at row row. Returns 0 if leading entry is not found
     int get_le_col(int row) const; //returns the column of the leading entry
-    int *dependencies_pos() const;
+    Matrix remove_zero_rows() const; //returns a new matrix which is a copy of *this with no zero rows
 
     //static functions
 

@@ -384,6 +384,12 @@ bool Matrix::is_mult_allowed(Matrix const &m1, Matrix const &m2){
 bool Matrix::is_same_dim(Matrix const &m1, Matrix const &m2){
     return m1.is_same_dim(m2);
 }
+bool Matrix::is_row_zero(int row_nbr) const{
+    for(int col{0}; col < cols(); col++){
+        if(row(row_nbr).matrix(0, col) != 0) return false;
+    }
+    return true;
+}
 
 //operations
 void Matrix::clear(){
@@ -726,8 +732,22 @@ int Matrix::get_le_col(int row) const{
 
     return col;
 }
-
-
+Matrix Matrix::remove_zero_rows() const{
+    //first we count the number of nonzero rows
+    int n_nonzero{0};
+    for(int row{0}; row < rows(); row++){
+        if(is_row_zero(row)) break;
+        n_nonzero++;
+    }
+    //now we create new matrix
+    Matrix tmp{n_nonzero, cols()};
+    for(int row{0}; row < tmp.rows(); row++){
+        for(int col{0}; col < cols(); col++){
+            tmp.matrix_[row][col] = matrix(row, col);
+        }
+    }
+    return tmp;
+}
 
 
 
