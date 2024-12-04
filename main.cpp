@@ -25,10 +25,21 @@ int main(){
         {0,0,0,3},
         {-1, 1, 2,1}
     };
+    Matrix M{
+        {1,2}, 
+        {3,4}
+    };
+
 
     
 
-    std::cout<<D.det()<<D.inv()<<"\n";
+    float *evals = M.evals();
 
+    for(int eval{0}; eval < M.cols(); eval++)
+    {
+        std::cout<<evals[eval]<<" ";
+    }
+
+    std::cout<<Set::evecs(M);
     return 0;
 }

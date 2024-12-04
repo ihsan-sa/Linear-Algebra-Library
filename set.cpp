@@ -306,7 +306,7 @@ Set Set::null_space(Matrix const &m){
             if(DEBUG_NULL) std::cout<<"\t\t\t\tOn row: "<<row<<"\n";
 
             if(m_rref.is_row_zero(row)) {
-                std::cout<<"\t\t\t\t\tSkipped...\n";
+                if(DEBUG_NULL)std::cout<<"\t\t\t\t\tSkipped...\n";
                 continue;
             } //skip the row if it is all zeros
 
@@ -368,8 +368,27 @@ Set Set::null_space(Matrix const &m){
     }
     if(DEBUG_NULL) std::cout<<"\tAbout to return\n";
 
-    return null_space;
+    return null_space.remove_dependencies();
 
+}
+
+Matrix Set::evecs(Matrix const &m){
+    float *evals = m.evals(); //this will check if evecs can be computed
+    int n_evals = m.cols();
+
+    Matrix P{m.cols(), 0};
+
+    for(int eval{0}; eval < n_evals; eval++){
+        //solve the system (A - lambdaI)x = 0
+        Matrix lhs{};
+        lhs = m - (evals[eval] * Matrix::eye(m.rows()));
+
+        Set basis{Set::null_space(lhs)};
+        std::cout<<basis;
+        P |= basis.convert_to_matrix();
+
+    }
+    return P;
 }
 
 std::ostream &operator<<(std::ostream &out, Set const &s){

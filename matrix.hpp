@@ -103,6 +103,7 @@ public:
     Matrix remove_zero_rows() const; //returns a new matrix which is a copy of *this with no zero rows
     Matrix remove_col(int col) const; //returns a new matrix which is a copy of *this with col col removed.
     Matrix remove_row(int row) const; //returns a new matrix which is a copy of *this with row row removed.
+    float *evals() const; //returns a DYNAMICALLY ALLOCATED ARRAY with the eigenvalues of the matrix.
 
     //static functions
 

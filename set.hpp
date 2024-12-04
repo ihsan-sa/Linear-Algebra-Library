@@ -67,6 +67,9 @@ public:
     static Set col_space(Matrix const &m); //returns a basis for the column space of a matrix m
     static Set null_space(Matrix const &m); //returns a basis for the null space of a matrix m
 
+    //eigenvalues and eigenvectors
+    static Matrix evecs(Matrix const &m); //returns a matrix (P) with the evecs of a matrix.
+
     //printing a set
     friend std::ostream &operator<<(std::ostream &out, Set const &s);
 };

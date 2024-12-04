@@ -1,5 +1,6 @@
 #include "matrix.hpp"
 #include <stdexcept>
+#include <cmath>
 
 #define DEBUG_STATUS false
 
@@ -825,6 +826,23 @@ Matrix Matrix::remove_row(int row_remove) const{
         tmp_row++;
     }
     return tmp;
+}
+float *Matrix::evals() const{
+    if(!is_square()){
+        throw std::domain_error{
+            "Non square matrix. Cannot compute eignevalues."
+        };
+    }
+    int n_evals = cols();
+    float *evals = new float[n_evals];
+
+    if(rows() == 2){
+        float m = (matrix(0,0)+matrix(1,1))/2;
+        float p = det();
+        evals[0] = m + std::sqrt( std::pow(m, 2) - p);
+        evals[1] = m - std::sqrt( std::pow(m, 2) - p);
+        return evals;
+    }
 }
 
 
