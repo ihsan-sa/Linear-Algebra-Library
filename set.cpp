@@ -227,7 +227,7 @@ Set Set::remove_dependencies() const{
             }
         }
         if(!leading_entry_found){
-            li_set.remove(m[col]);
+            li_set.remove(convert_to_matrix()[col]);
         }
     }
 

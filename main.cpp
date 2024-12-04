@@ -30,16 +30,17 @@ int main(){
         {3,4}
     };
 
-
+    Matrix A{
+        {1, 1, 4, 6}, 
+        {1, 2, 9, 12}, 
+        {2, -1, 2, 3}
+    };
     
-
-    float *evals = M.evals();
-
-    for(int eval{0}; eval < M.cols(); eval++)
-    {
-        std::cout<<evals[eval]<<" ";
-    }
-
-    std::cout<<Set::evecs(M);
+    std::cout<<Set(Matrix{
+        {-2, 0, 2}, 
+        {1, 1, 0}, 
+        {0, 2, 2}
+    }).remove_dependencies();
+   
     return 0;
 }
